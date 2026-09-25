@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KennKo - Manajemen Daftar Tamu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS untuk membaca Excel di Browser -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800 font-sans">
+
+    <!-- Toast UI Container (Pengganti Alert) -->
+    <div id="toast-message" class="fixed top-5 right-5 px-6 py-4 rounded-lg shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-3">
+        <i id="toast-icon" class="fas fa-info-circle text-xl"></i>
+        <span id="toast-text" class="font-medium">Pesan</span>
+    </div>
+
+    <div class="max-w-5xl mx-auto p-6 mt-10">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Upload Daftar Tamu</h1>
+            <p class="text-gray-600 mt-2">Unggah file template Excel KennKo untuk memproses undangan massal secara otomatis.</p>
+        </header>
+
+        <!-- Area Upload -->
+        <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 mb-8">
+            <div class="flex items-center justify-center w-full">
+                <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
+                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Klik untuk upload</span> atau drag and drop</p>
+                        <p class="text-xs text-gray-500">Hanya file .XLSX atau .XLS (Maks. 5MB)</p>
+                    </div>
+                    <input id="dropzone-file" type="file" class="hidden" accept=".xlsx, .xls" />
+                </label>
+            </div>
+            
+            <div class="mt-4 flex justify-between items-center">
+                <button onclick="downloadTemplate()" class="text-sm text-blue-600 hover:underline">Unduh Template Excel Kosong</button>
+                <div id="file-status" class="text-sm font-medium text-gray-600"></div>
+            </div>
+        </div>
+
+        <!-- Area Preview -->
+        <div id="preview-section" class="hidden bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800">Preview Data Tamu</h2>
+                    <p id="summary-text" class="text-sm text-gray-600">Total: 0 | Valid: 0 | Error: 0</p>
+                </div>
+                <button id="btn-submit" onclick="submitDataToGAS()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition" disabled>
+                    Simpan ke Database
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                        <tr>
+                            <th class="px-6 py-3">Status</th>
+                            <th class="px-6 py-3">Sapaan</th>
+                            <th class="px-6 py-3">Nama Tamu</th>
+                            <th class="px-6 py-3">Alamat</th>
+                            <th class="px-6 py-3">WhatsApp</th>
+                            <th class="px-6 py-3">Jml Undangan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Rows akan dirender via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. KONFIGURASI API & UI
+        // ==========================================
+        // Ganti URL ini dengan Web App URL hasil deploy Google Apps Script Anda
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwkKZxjdhaq3vN15cIMzTz81-kSu-iy5ev52B6qS13m3lY82w8uvCnmLxJwZLZvPcfTmA/exec";
+        const CURRENT_PROJECT_ID = "PRJ-98765"; // Asumsi project ID yang sedang aktif
+
+        let validatedGuests = [];
+        let hasErrors = false;
+
+        // UI Toast Function
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast-message');
+            const toastText = document.getElementById('toast-text');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastText.innerText = message;
+            
+            if (isError) {
+                toast.className = 'fixed top-5 right-5 px-6 py-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 flex items-center gap-3 bg-red-600 text-white';
+                toastIcon.className = 'fas fa-exclamation-circle text-xl';
+            } else {
+                toast.className = 'fixed top-5 right-5 px-6 py-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 flex items-center gap-3 bg-gray-900 text-white';
+                toastIcon.className = 'fas fa-check-circle text-xl text-green-400';
+            }
+            
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 4000);
+        }
+
+        // ==========================================
+        // 2. PARSING EXCEL (Menggunakan SheetJS)
+        // ==========================================
+        document.getElementById('dropzone-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('file-status').innerHTML = `<span class="text-blue-600">Membaca file ${file.name}...</span>`;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    
+                    // Ambil sheet pertama
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Konversi ke JSON (menggunakan baris 1 sebagai header)
+                    const rawJson = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+                    
+                    processExcelData(rawJson);
+                } catch (error) {
+                    showToast("Gagal membaca file Excel. Pastikan formatnya benar.", true);
+                    document.getElementById('file-status').innerText = "";
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // ==========================================
+        // 3. VALIDASI DATA
+        // ==========================================
+        function processExcelData(data) {
+            validatedGuests = [];
+            hasErrors = false;
+            let validCount = 0;
+            let errorCount = 0;
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            data.forEach((row, index) => {
+                // Mapping kolom Excel ke variabel sistem
+                // Pastikan nama kolom Excel (NO, SAPAAN, dll) sesuai template
+                const guest = {
+                    custom_greeting: row["SAPAAN"] || "Kepada Yth.",
+                    name: String(row["NAMA TAMU"] || "").trim(),
+                    address: String(row["ALAMAT/INSTANSI"] || "").trim(),
+                    category: String(row["KATEGORI"] || "Reguler").trim(),
+                    whatsapp: String(row["WHATSAPP"] || "").trim(),
+                    pax_invited: parseInt(row["JUMLAH UNDANGAN"]) || 1
+                };
+
+                let rowErrors = [];
+
+                // Aturan Validasi
+                if (!guest.name) rowErrors.push("Nama kosong");
+                if (!guest.address) rowErrors.push("Alamat kosong");
+                if (guest.whatsapp && !/^\d+$/.test(guest.whatsapp)) rowErrors.push("WA tidak valid (harus angka)");
+
+                const isValid = rowErrors.length === 0;
+                
+                if (isValid) {
+                    validCount++;
+                    validatedGuests.push(guest); // Hanya masukkan data yang valid untuk dikirim
+                } else {
+                    errorCount++;
+                    hasErrors = true;
+                }
+
+                // Render Baris ke Tabel Preview
+                const statusHtml = isValid 
+                    ? `<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded border border-green-400">Valid</span>`
+                    : `<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded border border-red-400" title="${rowErrors.join(', ')}">Error</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = "bg-white border-b hover:bg-gray-50";
+                tr.innerHTML = `
+                    <td class="px-6 py-4">${statusHtml}</td>
+                    <td class="px-6 py-4">${guest.custom_greeting}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900 ${!guest.name ? 'text-red-500' : ''}">${guest.name || '-'}</td>
+                    <td class="px-6 py-4 ${!guest.address ? 'text-red-500' : ''}">${guest.address || '-'}</td>
+                    <td class="px-6 py-4 ${rowErrors.includes("WA tidak valid (harus angka)") ? 'text-red-500' : ''}">${guest.whatsapp || '-'}</td>
+                    <td class="px-6 py-4">${guest.pax_invited}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update UI
+            document.getElementById('preview-section').classList.remove('hidden');
+            document.getElementById('summary-text').innerHTML = `Total: <strong>${data.length}</strong> | Valid: <strong class="text-green-600">${validCount}</strong> | Error: <strong class="text-red-600">${errorCount}</strong>`;
+            
+            const btnSubmit = document.getElementById('btn-submit');
+            if (validCount > 0) {
+                btnSubmit.disabled = false;
+                document.getElementById('file-status').innerHTML = `<span class="text-green-600">Siap diimpor (${validCount} data)</span>`;
+            } else {
+                btnSubmit.disabled = true;
+                document.getElementById('file-status').innerHTML = `<span class="text-red-600">Tidak ada data valid.</span>`;
+            }
+        }
+
+        // ==========================================
+        // 4. MENGIRIM KE GOOGLE APPS SCRIPT
+        // ==========================================
+        async function submitDataToGAS() {
+            if (validatedGuests.length === 0) return;
+
+            const btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Menyimpan...";
+
+            // Siapkan payload sesuai arsitektur
+            const payload = {
+                action: "uploadGuestsBatch",
+                payload: {
+                    project_id: CURRENT_PROJECT_ID,
+                    guests: validatedGuests
+                }
+            };
+
+            try {
+                // Menggunakan fetch POST dengan method 'no-cors' tidak akan bisa membaca JSON response.
+                // Untuk Apps Script, lebih aman mengirim `text/plain` body dan menangani response normal.
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8', 
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast(`Berhasil! ${result.data.inserted_count} tamu telah ditambahkan ke database.`);
+                    // Reset UI
+                    document.getElementById('preview-section').classList.add('hidden');
+                    document.getElementById('dropzone-file').value = "";
+                    document.getElementById('file-status').innerText = "";
+                } else {
+                    showToast("Gagal menyimpan: " + result.error, true);
+                }
+            } catch (error) {
+                console.error("Fetch error:", error);
+                showToast("Kesalahan jaringan. Pastikan API URL GAS Anda sudah benar.", true);
+            } finally {
+                btnSubmit.innerText = "Simpan ke Database";
+                btnSubmit.disabled = false;
+            }
+        }
+
+        function downloadTemplate() {
+            showToast("Template KennKo_Template_Tamu.xlsx akan mulai diunduh.");
+            // Implementasi kedepan: generate file excel dengan SheetJS
+        }
+    </script>
+</body>
+</html>
