@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat Undangan Baru | KennKo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .step-active { border-color: #2563eb; background-color: #eff6ff; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Topbar -->
+    <header class="bg-white px-8 py-4 border-b border-gray-200 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center font-bold text-lg text-white">K</div>
+            <span class="text-xl font-bold tracking-wide">KennKo</span>
+        </div>
+        <a href="dashboard.html" class="text-gray-500 hover:text-gray-800 text-sm font-medium"><i class="fas fa-times mr-1"></i> Batal</a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex justify-center py-10 px-4">
+        <div class="bg-white max-w-3xl w-full rounded-xl shadow-sm border border-gray-200 p-8">
+            
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Buat Proyek Undangan Baru</h1>
+            <p class="text-gray-500 mb-8">Ikuti langkah sederhana ini untuk menyiapkan undangan digital dan cetak Anda.</p>
+
+            <form action="dashboard.html" method="GET">
+                <!-- Step 1: Jenis Acara -->
+                <div class="mb-8">
+                    <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4 border-b pb-2">1. Jenis Acara</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <label class="border-2 border-blue-600 bg-blue-50 rounded-lg p-4 cursor-pointer text-center hover:border-blue-500 transition relative">
+                            <input type="radio" name="event_type" value="wedding" class="absolute top-2 right-2" checked>
+                            <i class="fas fa-rings text-2xl text-blue-600 mb-2 mt-2"></i>
+                            <div class="font-semibold text-gray-800 text-sm">Pernikahan</div>
+                        </label>
+                        <label class="border-2 border-gray-200 rounded-lg p-4 cursor-pointer text-center hover:border-blue-500 transition relative">
+                            <input type="radio" name="event_type" value="kumpul_keluarga" class="absolute top-2 right-2">
+                            <i class="fas fa-users text-2xl text-gray-500 mb-2 mt-2"></i>
+                            <div class="font-semibold text-gray-800 text-sm">Kumpul Keluarga</div>
+                        </label>
+                        <label class="border-2 border-gray-200 rounded-lg p-4 cursor-pointer text-center hover:border-blue-500 transition relative">
+                            <input type="radio" name="event_type" value="syukuran" class="absolute top-2 right-2">
+                            <i class="fas fa-praying-hands text-2xl text-gray-500 mb-2 mt-2"></i>
+                            <div class="font-semibold text-gray-800 text-sm">Syukuran</div>
+                        </label>
+                        <label class="border-2 border-gray-200 rounded-lg p-4 cursor-pointer text-center hover:border-blue-500 transition relative">
+                            <input type="radio" name="event_type" value="adat" class="absolute top-2 right-2">
+                            <i class="fas fa-gopuram text-2xl text-gray-500 mb-2 mt-2"></i>
+                            <div class="font-semibold text-gray-800 text-sm">Acara Adat</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 2: Detail Dasar -->
+                <div class="mb-8">
+                    <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4 border-b pb-2">2. Informasi Dasar</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Judul Proyek</label>
+                            <input type="text" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Cth: Pernikahan Yohanes & Maria" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Acara</label>
+                            <input type="date" class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500 outline-none" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Tema -->
+                <div class="mb-8">
+                    <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4 border-b pb-2">3. Pilih Tema / Desain Dasar</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-500">
+                            <div class="h-32 bg-gray-200 flex items-center justify-center bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=400');">
+                                <span class="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs font-bold">NTT Heritage</span>
+                            </div>
+                            <div class="p-3 bg-white">
+                                <p class="font-semibold text-sm">Tenun Flobamora</p>
+                                <input type="radio" name="theme" class="mt-2" checked> Pilih
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-500">
+                            <div class="h-32 bg-gray-200 flex items-center justify-center bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=400');">
+                                <span class="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs font-bold">Modern Elegan</span>
+                            </div>
+                            <div class="p-3 bg-white">
+                                <p class="font-semibold text-sm">Gold & Navy</p>
+                                <input type="radio" name="theme" class="mt-2"> Pilih
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-blue-500">
+                            <div class="h-32 bg-gray-200 flex items-center justify-center bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&q=80&w=400');">
+                                <span class="bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs font-bold">Rustic</span>
+                            </div>
+                            <div class="p-3 bg-white">
+                                <p class="font-semibold text-sm">Wood & Floral</p>
+                                <input type="radio" name="theme" class="mt-2"> Pilih
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="flex justify-end pt-4 border-t border-gray-200">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition shadow-md flex items-center gap-2">
+                        Simpan & Mulai Edit <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </main>
+</body>
+</html>
