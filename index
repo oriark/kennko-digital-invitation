@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Kumpul Keluarga - Ricky Yakobus Kota</title>
+    
+    <!-- Google Fonts untuk Tipografi Elegan -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS untuk Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tambahan script html2pdf untuk fitur Download PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <!-- Tambahan script html2canvas untuk fitur Download Image (JPG/PNG) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#B8860B',
+                        darkgold: '#8B6508',
+                        paper: '#FDFBF7',
+                        charcoal: '#333333'
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        heading: ['"Playfair Display"', 'serif'],
+                        script: ['"Great Vibes"', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Background luar kertas */
+        body {
+            background-color: #52525b;
+        }
+        
+        /* Container persis 1 lembar kertas A4 */
+        .kertas-a4 {
+            width: 100%;
+            max-width: 210mm;
+            height: 297mm; /* Tinggi pasti A4 */
+            background-color: #FDFBF7;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin: 0 auto;
+            overflow: hidden;
+            box-sizing: border-box; /* Memastikan padding tidak merusak ukuran kertas */
+        }
+
+        /* Border ganda elegan - Diposisikan dengan aman */
+        .kertas-a4::before {
+            content: '';
+            position: absolute;
+            top: 12mm; right: 12mm; bottom: 12mm; left: 12mm;
+            border: 1px solid #B8860B;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .kertas-a4::after {
+            content: '';
+            position: absolute;
+            top: 15mm; right: 15mm; bottom: 15mm; left: 15mm;
+            border: 1px solid rgba(184, 134, 11, 0.3);
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        /* Ornamen Garis Emas */
+        .gold-divider {
+            height: 1.5px;
+            background: linear-gradient(to right, transparent, #B8860B, transparent);
+            margin: 10px auto;
+            width: 50%;
+        }
+
+        /* Pengaturan Khusus Print */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 0;
+            }
+            .kertas-a4 {
+                box-shadow: none;
+                margin: 0 auto;
+            }
+        }
+
+        /* Mengunci ukuran persis ke pixel A4 agar html2canvas tidak mengubah skala */
+        .kertas-a4 {
+            width: 794px;
+            height: 1123px;
+            background-color: #FDFBF7;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin: 0 auto;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        /* Container pembungkus agar bisa di-scroll rapi di HP */
+        .kertas-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body class="bg-zinc-600 min-h-screen">
+
+    <div class="kertas-wrapper">
+        <!-- Kertas Undangan: Ukuran Dikunci Absolute -->
+        <div id="undangan-container" class="kertas-a4 text-center font-serif text-charcoal bg-[#FDFBF7] relative mx-auto">
+            
+            <!-- Border Luar -->
+            <div class="absolute top-[20px] left-[20px] right-[20px] bottom-[20px] border-[2px] border-[#B8860B] pointer-events-none z-20"></div>
+            <!-- Border Dalam -->
+            <div class="absolute top-[28px] left-[28px] right-[28px] bottom-[28px] border border-[#B8860B]/40 pointer-events-none z-20"></div>
+
+            <!-- Ornamen Bunga Kiri Atas -->
+            <svg class="absolute top-[28px] left-[28px] w-[130px] h-[130px] text-gold opacity-85 pointer-events-none z-10" viewBox="0 0 200 200" fill="#B8860B" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,0 C60,0 120,40 150,100 C150,80 140,50 110,40 C130,50 140,70 140,90 C140,60 110,20 60,10 C80,20 100,40 100,60 C100,30 60,0 0,0 Z"/>
+                <path d="M0,0 C0,60 40,120 100,150 C80,150 50,140 40,110 C50,130 70,140 90,140 C60,140 20,110 10,60 C20,80 40,100 60,100 C30,100 0,60 0,0 Z"/>
+                <circle cx="80" cy="80" r="4"/>
+                <circle cx="105" cy="45" r="3"/>
+                <circle cx="45" cy="105" r="3"/>
+            </svg>
+
+            <!-- Ornamen Bunga Kanan Atas -->
+            <svg class="absolute top-[28px] right-[28px] w-[130px] h-[130px] text-gold opacity-85 pointer-events-none z-10 transform scale-x-[-1]" viewBox="0 0 200 200" fill="#B8860B" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,0 C60,0 120,40 150,100 C150,80 140,50 110,40 C130,50 140,70 140,90 C140,60 110,20 60,10 C80,20 100,40 100,60 C100,30 60,0 0,0 Z"/>
+                <path d="M0,0 C0,60 40,120 100,150 C80,150 50,140 40,110 C50,130 70,140 90,140 C60,140 20,110 10,60 C20,80 40,100 60,100 C30,100 0,60 0,0 Z"/>
+                <circle cx="80" cy="80" r="4"/>
+                <circle cx="105" cy="45" r="3"/>
+                <circle cx="45" cy="105" r="3"/>
+            </svg>
+
+            <!-- Ornamen Bunga Kiri Bawah -->
+            <svg class="absolute bottom-[28px] left-[28px] w-[130px] h-[130px] text-gold opacity-85 pointer-events-none z-10 transform scale-y-[-1]" viewBox="0 0 200 200" fill="#B8860B" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,0 C60,0 120,40 150,100 C150,80 140,50 110,40 C130,50 140,70 140,90 C140,60 110,20 60,10 C80,20 100,40 100,60 C100,30 60,0 0,0 Z"/>
+                <path d="M0,0 C0,60 40,120 100,150 C80,150 50,140 40,110 C50,130 70,140 90,140 C60,140 20,110 10,60 C20,80 40,100 60,100 C30,100 0,60 0,0 Z"/>
+                <circle cx="80" cy="80" r="4"/>
+                <circle cx="105" cy="45" r="3"/>
+                <circle cx="45" cy="105" r="3"/>
+            </svg>
+
+            <!-- Ornamen Bunga Kanan Bawah -->
+            <svg class="absolute bottom-[28px] right-[28px] w-[130px] h-[130px] text-gold opacity-85 pointer-events-none transform rotate-180 z-10" viewBox="0 0 200 200" fill="#B8860B" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,0 C60,0 120,40 150,100 C150,80 140,50 110,40 C130,50 140,70 140,90 C140,60 110,20 60,10 C80,20 100,40 100,60 C100,30 60,0 0,0 Z"/>
+                <path d="M0,0 C0,60 40,120 100,150 C80,150 50,140 40,110 C50,130 70,140 90,140 C60,140 20,110 10,60 C20,80 40,100 60,100 C30,100 0,60 0,0 Z"/>
+                <circle cx="80" cy="80" r="4"/>
+                <circle cx="105" cy="45" r="3"/>
+                <circle cx="45" cy="105" r="3"/>
+            </svg>
+
+            <!-- SAFE CONTENT WRAPPER (BRANKAS KONTEN) -->
+            <!-- Ruang ini dikunci dengan jarak absolute dari bingkai. Mustahil bagi teks untuk keluar dari area ini. -->
+            <div class="absolute top-[60px] bottom-[85px] left-[70px] right-[70px] z-30 flex flex-col justify-between items-center text-center">
+                
+                <!-- Header Undangan -->
+                <div class="w-full flex flex-col items-center">
+                    <h1 class="font-heading text-[54px] text-[#B8860B] tracking-[0.15em] uppercase font-bold mb-[2px] leading-none">Undangan</h1>
+                    <h2 class="font-serif text-[18px] tracking-[0.25em] text-gray-800 font-bold mb-[12px]">KUMPUL KELUARGA</h2>
+                    
+                    <p class="text-[17px] italic text-gray-900 font-semibold mb-[4px]">
+                        Syalom, salam sejahtera bagi kita semua.
+                    </p>
+                    <p class="text-[17px] leading-[1.6] text-gray-900 font-medium px-[5px]">
+                        Dengan memanjatkan puji syukur ke hadirat Tuhan Yang Maha Esa, kami menyampaikan kabar bahagia ini. Berkenaan dengan akan dilangsungkannya pernikahan putra kami terkasih:
+                    </p>
+                </div>
+
+                <!-- Nama & Orang Tua -->
+                <div class="w-full flex flex-col items-center">
+                    <h3 class="font-script text-[45px] text-[#8B6508] font-bold leading-normal pb-[25px]">
+                        Ricky Yakobus Kota, S.Pd., M.Ed.
+                    </h3>
+                    <p class="text-[16px] text-gray-900 font-medium leading-[1.6] max-w-[95%] mx-auto mt-[5px]">
+                        (Anak ke-3 Putra ke-3 dari 6 bersaudara, dari pasangan <br>
+                        <span class="font-bold">Bapak Marthen Luther Kota (Alm.)</span> dan <span class="font-bold">Ibu Agustina Kota - Wila Rohi</span>)
+                    </p>
+                </div>
+                
+                <div class="gold-divider w-[45%] h-[1.5px] bg-gradient-to-r from-transparent via-[#B8860B] to-transparent"></div>
+
+                <div class="w-full">
+                    <p class="text-[17px] leading-[1.6] text-gray-900 font-medium px-[10px] mb-[12px]">
+                        Dengan penuh sukacita, kami memohon kesediaan langkah dan waktu Bapak/Ibu, Saudara/i untuk hadir berbagi kasih dan doa bersama kami dalam acara <strong class="text-[#8B6508] font-bold">Kumpul Keluarga</strong>, yang akan diselenggarakan pada:
+                    </p>
+
+                    <!-- Kotak Detail Acara -->
+                    <div class="bg-gray-50/80 border border-[#B8860B]/40 py-[12px] px-[20px] rounded-sm w-[94%] mx-auto text-left shadow-sm">
+                        <table class="w-full text-[16px] text-gray-900 font-medium leading-[1.6]">
+                            <tr class="align-top">
+                                <td class="py-[2px] pr-[12px] font-bold whitespace-nowrap text-[#8B6508] w-[130px]">Hari, Tanggal</td>
+                                <td class="py-[2px] px-[8px] text-[#B8860B] font-bold w-[12px]">:</td>
+                                <td class="py-[2px] font-bold">Jumat, 9 Oktober 2026</td>
+                            </tr>
+                            <tr class="align-top">
+                                <td class="py-[2px] pr-[12px] font-bold text-[#8B6508]">Waktu</td>
+                                <td class="py-[2px] px-[8px] text-[#B8860B] font-bold">:</td>
+                                <td class="py-[2px] font-bold">Pukul 15.00 WITA – Selesai</td>
+                            </tr>
+                            <tr class="align-top">
+                                <td class="py-[2px] pr-[12px] font-bold text-[#8B6508]">Tempat</td>
+                                <td class="py-[2px] px-[8px] text-[#B8860B] font-bold">:</td>
+                                <td class="py-[2px] leading-[1.5]">
+                                    <strong class="font-bold text-[16px]">Kediaman Keluarga Bpk. Marthen Luther Kota (Alm.)</strong><br>
+                                    Jl. Melati, Kelurahan Manulai II, Kec. Alak, Kota Kupang<br>
+                                    <span class="italic text-gray-700 text-[14px] mt-[2px] block font-medium">(Tepat di depan Gereja Katolik St. Petrus Manulai II)</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bagian Denah -->
+                <div class="w-full flex flex-col items-center">
+                    <div class="flex items-center gap-[12px] w-[45%] mb-[8px]">
+                        <div class="flex-1 h-[1px] bg-[#B8860B]/50"></div>
+                        <span class="font-heading text-[#B8860B] text-[13px] font-bold tracking-[0.15em] uppercase">Denah Lokasi</span>
+                        <div class="flex-1 h-[1px] bg-[#B8860B]/50"></div>
+                    </div>
+                    
+                    <div class="w-[135px] h-[135px] bg-gray-50 border-[2px] border-[#B8860B]/60 overflow-hidden shadow-sm flex justify-center items-center cursor-pointer group relative p-[2px]" onclick="openFullscreen()">
+                        <div class="absolute inset-0 bg-black/50 hidden group-hover:flex flex-col items-center justify-center transition-all z-10">
+                            <span class="text-white text-[12px] font-bold tracking-wider bg-black/60 px-[10px] py-[4px] rounded-full shadow-lg text-center leading-tight">⛶<br>Perbesar</span>
+                        </div>
+                        <img src="https://i.ibb.co.com/FqkSbnYn/Screenshot-2026-09-27-125927.png" alt="Denah Lokasi" class="w-full h-full object-cover object-center" crossorigin="anonymous">
+                    </div>
+                </div>
+
+                <!-- Penutup -->
+                <div class="w-full">
+                    <p class="text-[16px] leading-[1.6] px-[10px] mb-[10px] text-gray-900 font-medium">
+                        Kehadiran dan doa restu Bapak/Ibu, Saudara/i merupakan suatu kehormatan dan kebahagiaan yang tak terhingga bagi kami. Tiada kata yang lebih indah selain ucapan terima kasih yang tulus dari lubuk hati kami.
+                    </p>
+                    
+                    <p class="text-[17px] italic mb-[4px] text-gray-800 font-semibold">Kami yang mengundang,</p>
+                    <div class="font-heading text-[18px] text-gray-900 font-bold leading-[1.4] flex flex-col">
+                        <p>Keluarga Kota</p>
+                        <p>Keluarga Wila Rohi</p>
+                        <p>Keluarga Djami Wila</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Fullscreen -->
+    <div id="imageModal" class="fixed inset-0 z-[100] bg-black/90 hidden flex-col items-center justify-center backdrop-blur-sm transition-opacity" onclick="closeFullscreen()">
+        <button class="absolute top-6 right-6 text-white text-5xl hover:text-[#B8860B] focus:outline-none transition-colors drop-shadow-md" onclick="closeFullscreen()">&times;</button>
+        <img src="https://i.ibb.co.com/FqkSbnYn/Screenshot-2026-09-27-125927.png" class="max-w-[95vw] max-h-[85vh] object-contain border border-[#B8860B]/50 rounded shadow-2xl" onclick="event.stopPropagation()">
+        
+        <a href="https://ibb.co.com/TqDVBr0r" target="_blank" class="mt-5 px-6 py-2 bg-transparent border border-[#B8860B] text-[#B8860B] rounded-full text-sm hover:bg-[#B8860B] hover:text-white transition-all shadow-lg" onclick="event.stopPropagation()">
+            Buka di Browser
+        </a>
+    </div>
+
+    <!-- Menu Tombol Mengambang (Hover Menu) -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 group">
+        <div class="flex flex-col items-end gap-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+            <button id="btn-jpeg" onclick="downloadImage('jpeg')" class="bg-white text-[#B8860B] border-2 border-[#B8860B] px-4 py-2 rounded-full shadow-lg hover:bg-[#FDFBF7] transition-all font-semibold text-sm flex items-center gap-2">
+                🖼️ Unduh JPG
+            </button>
+            <button id="btn-png" onclick="downloadImage('png')" class="bg-white text-[#B8860B] border-2 border-[#B8860B] px-4 py-2 rounded-full shadow-lg hover:bg-[#FDFBF7] transition-all font-semibold text-sm flex items-center gap-2">
+                🏞️ Unduh PNG
+            </button>
+        </div>
+        <button class="bg-[#B8860B] text-white px-5 py-3 rounded-full shadow-2xl hover:bg-[#8B6508] transition-all font-semibold flex items-center gap-2 border border-white/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Simpan Undangan
+        </button>
+    </div>
+
+    <script>
+        function openFullscreen() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeFullscreen() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function downloadImage(format) {
+            const element = document.getElementById('undangan-container');
+            const btn = document.getElementById('btn-' + format);
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '⏳ Memproses...';
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+
+            // WAJIB: Tunggu semua font selesai dimuat
+            await document.fonts.ready;
+            
+            // Kunci: Reset scroll ke pojok atas agar koordinat tangkapan layar tidak melenceng
+            window.scrollTo(0, 0);
+
+            html2canvas(element, {
+                scale: 4, 
+                useCORS: true,
+                scrollY: 0,
+                scrollX: 0,
+                width: 794,    // Kunci persis selebar kertas
+                height: 1123,  // Kunci persis setinggi kertas
+                windowWidth: 794
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/' + format, 1.0);
+                const link = document.createElement('a');
+                link.download = 'Undangan_Kumpul_Keluarga.' + (format === 'jpeg' ? 'jpg' : format);
+                link.href = imgData;
+                link.click();
+
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+            }).catch(err => {
+                console.error('Error:', err);
+                btn.innerHTML = '❌ Gagal. Coba lagi.';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75');
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
